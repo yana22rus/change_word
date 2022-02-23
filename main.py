@@ -1,4 +1,5 @@
 import os.path
+from random import sample
 import uuid
 from flask import Flask,request,render_template
 
@@ -13,7 +14,10 @@ ALLOWED_EXTENSIONS = {"txt","md"}
 @app.route('/upload',methods=["GET","POST"])
 def upload_file():
 
+    lst = []
+
     if request.method == "POST":
+
         file = request.files["file"]
 
         file.filename = f'{uuid.uuid4()}.{file.filename.split(".")[-1].lower()}'
@@ -21,16 +25,30 @@ def upload_file():
 
         path = f"{os.getcwd()}/static/{UPLOAD_FOLDER}/{file.filename}"
 
-        print(path)
 
         with open(path) as f:
 
             f = " ".join(f.readlines()).split()
 
-        print(f)
 
+        for x in f:
 
-        return "123"
+            if len(x) > 3:
+
+                first_char = x[0]
+
+                last_char = x[-1]
+
+                slice_word = x[1:len(x) - 1]
+
+                r = "".join(sample(list(slice_word), len(slice_word)))
+
+                lst.append(f"{first_char}{r}{last_char}")
+            else:
+
+                lst.append(x)
+
+        return " ".join(lst)
 
     return render_template("uploads.html")
 
